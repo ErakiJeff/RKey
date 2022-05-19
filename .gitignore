@@ -1,0 +1,6 @@
+oauth2_creds.json
+env/
+.vscode/
+__pycache__/
+debug/
+config.json

@@ -1,0 +1,15 @@
+{
+    "email_recipient": "email@gmail.com",
+    "log_file_location": "C:\\Users\\user\\Documents\\My Games\\Binding of Isaac Repentance\\log.txt",
+    "target_quality": 4,
+    "sample_point": {
+        "x": 1706,
+        "y": 156
+    },
+    "screenshot_region": {
+        "x": 1651,
+        "y": 99,
+        "width": 115,
+        "height": 115
+    }
+}
