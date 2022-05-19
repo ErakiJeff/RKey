@@ -2,7 +2,10 @@ import config_reader
 from itertools import islice
 import re
 
-collectible_re = re.compile(r"Adding collectible (\d+) \(([^()]+)\)")
+# Capture group 1: item id
+# Capture group 2: item name
+# Capture group 3: player name
+collectible_re = re.compile(r"Adding collectible (\d+) \(([^()]+)\).*\(([^()]+)\)")
 
 
 class IsaacLogParser:
@@ -38,4 +41,5 @@ class IsaacLogParser:
         if match:
             item_id = int(match[1])
             item_name = match[2]
-            return (item_id, item_name)
+            player_name = match[3]
+            return (item_id, item_name, player_name)

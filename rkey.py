@@ -4,28 +4,17 @@ from enum import IntEnum
 from isaac_log_parser import IsaacLogParser
 from PIL import Image
 from emailer import send_email
-from ids_to_quality import get_item_ids_to_quality
+from ids_to_quality import get_item_ids_to_quality, get_player_starting_items
 from game_setup import borderless_fullscreen_window
 import config_reader
 
-# minimap bounding box
-# X: 1651 | Y: 99 | Right: 1765 | Bottom: 213
-# Width: 115 px | Height: 115 px | Area: 13225 px | Perimeter: 460 px
-# Distance: 161.22 px | Angle: 45.00°
-
-# sample point
-# X: 1700 | Y: 155 | Right: 1708 | Bottom: 159
-# Width: 9 px | Height: 6 px | Area: 54 px | Perimeter: 30 px
-# Distance: 9.43 px | Angle: 32.01°
-
 id_to_quality = get_item_ids_to_quality()
+starting_items = get_player_starting_items()
 movement_to_shooting = {"w": "up", "a": "left", "s": "down", "d": "right"}
 target_quality = config_reader.get_data("target_quality")
 sample_point = config_reader.get_data("sample_point")
 email_recipient = config_reader.get_data("email_recipient")
 screenshot_region = config_reader.get_data("screenshot_region")
-
-[1651, 99, 115, 115]
 
 
 class BotStates(IntEnum):
@@ -121,7 +110,7 @@ def main():
                 raise ValueError
             parser.parse()
             try:
-                item_id, item_name = parser.get_most_recent_item()
+                item_id, item_name, player_name = parser.get_most_recent_item()
             except ValueError:
                 if dirx != None:
                     move_around_block(xdir=dirx)
@@ -129,12 +118,15 @@ def main():
                     move_around_block(ydir=diry)
                 parser.parse()
                 try:
-                    item_id, item_name = parser.get_most_recent_item()
+                    item_id, item_name, player_name = parser.get_most_recent_item()
                 except ValueError:
                     current_state = BotStates.RKEYING
                     continue
 
-            if id_to_quality[item_id] == target_quality:
+            if (
+                id_to_quality[item_id] == target_quality
+                and starting_items[player_name] != item_id
+            ):
                 current_state = BotStates.FOUND
                 continue
             else:

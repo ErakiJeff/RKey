@@ -14,3 +14,26 @@ def get_item_ids_to_quality():
                     item_element.attrib["quality"]
                 )
         return item_ids_to_quality
+
+
+def get_player_starting_items():
+    return {
+        "Isaac": [105],
+        "Magdalene": [45],
+        "Cain": [46, 710],
+        "Judas": [34, 705],
+        "???": [36, 715],
+        "Eve": [117, 126, 122, 713],
+        "Samson": [157],
+        "Azazel": [],
+        "Lazarus": [214, 711],
+        "Eden": [],
+        "Lost": [609],
+        "Lilith": [357, 412],
+        "Keeper": [349],
+        "Apollyon": [706, 477],
+        "Forgotten": [],
+        "Bethany": [712, 584],
+        "Jacob": [722],
+        "Esau": [],
+    }
