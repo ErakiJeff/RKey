@@ -15,6 +15,7 @@ target_quality = get_data("target_quality")
 sample_point = get_data("sample_point")
 screenshot_region = get_data("screenshot_region")
 do_send_email = get_data("do_send_email")
+start_delay = get_data("start_delay")
 
 
 class BotStates(IntEnum):
@@ -45,7 +46,7 @@ def move_around_block(xdir=None, ydir=None):
 
 def main():
     print("STARTING!")
-    time.sleep(3)
+    time.sleep(start_delay)
     borderless_fullscreen_window("Binding of Isaac: Repentance")
     treasure_room_icon = Image.open("data/treasure_room_icon.png")
     parser = IsaacLogParser()

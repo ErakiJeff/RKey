@@ -1,5 +1,6 @@
 {
     "do_send_email": true,
+    "start_delay": 10,
     "email_recipient": "email@example.com",
     "email_sender": "email2@example.com",
     "log_file_location": "C:\\Users\\user\\Documents\\My Games\\Binding of Isaac Repentance\\log.txt",
