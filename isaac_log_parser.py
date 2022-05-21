@@ -1,11 +1,12 @@
 import config_reader
-from itertools import islice
+from game_data import get_player_starting_items
 import re
 
 # Capture group 1: item id
 # Capture group 2: item name
 # Capture group 3: player name
 collectible_re = re.compile(r"Adding collectible (\d+) \(([^()]+)\).*\(([^()]+)\)")
+starting_items = get_player_starting_items()
 
 
 class IsaacLogParser:
@@ -20,7 +21,7 @@ class IsaacLogParser:
     def parse(self):
         with open(self.log_file_location, "r") as reader:
             lines = reader.readlines()
-            self.new_lines = islice(lines, self.last_read_line, None)
+            self.new_lines = lines[self.last_read_line :]
             self.last_read_line = len(lines)
 
     def is_in_new_lines(self, search_term):
@@ -37,9 +38,16 @@ class IsaacLogParser:
 
     def get_most_recent_item(self):
         item_line = self.get_line_in_new_lines("Adding collectible")
-        match = collectible_re.search(item_line)
-        if match:
+        match = None
+        if item_line != None:
+            match = collectible_re.search(item_line)
+        if match != None:
             item_id = int(match[1])
             item_name = match[2]
-            player_name = match[3]
-            return (item_id, item_name, player_name)
+            character_name = match[3]
+
+            if item_id not in starting_items[character_name]:
+                return (item_id, item_name, character_name)
+
+    def flush_new_lines(self):
+        self.new_lines = []

@@ -1,5 +1,7 @@
 {
-    "email_recipient": "email@gmail.com",
+    "do_send_email": true,
+    "email_recipient": "email@example.com",
+    "email_sender": "email2@example.com",
     "log_file_location": "C:\\Users\\user\\Documents\\My Games\\Binding of Isaac Repentance\\log.txt",
     "target_quality": 4,
     "sample_point": {

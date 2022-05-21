@@ -1,6 +1,9 @@
 import json
 
-data = json.load("config.json")
+data = None
+with open("config.json") as reader:
+    data = json.load(reader)
+
 
 def get_data(config_field):
     if config_field in data:

@@ -4,17 +4,17 @@ from enum import IntEnum
 from isaac_log_parser import IsaacLogParser
 from PIL import Image
 from emailer import send_email
-from ids_to_quality import get_item_ids_to_quality, get_player_starting_items
+from game_data import get_item_ids_to_quality, get_player_starting_items
 from game_setup import borderless_fullscreen_window
-import config_reader
+from config_reader import get_data
 
 id_to_quality = get_item_ids_to_quality()
 starting_items = get_player_starting_items()
 movement_to_shooting = {"w": "up", "a": "left", "s": "down", "d": "right"}
-target_quality = config_reader.get_data("target_quality")
-sample_point = config_reader.get_data("sample_point")
-email_recipient = config_reader.get_data("email_recipient")
-screenshot_region = config_reader.get_data("screenshot_region")
+target_quality = get_data("target_quality")
+sample_point = get_data("sample_point")
+screenshot_region = get_data("screenshot_region")
+do_send_email = get_data("do_send_email")
 
 
 class BotStates(IntEnum):
@@ -37,7 +37,7 @@ def move_around_block(xdir=None, ydir=None):
         move("s", 0.3)
     elif ydir != None:
         move("d", 0.3)
-        move(xdir, 0.3)
+        move(ydir, 0.3)
         move("a", 0.3)
     else:
         raise TypeError
@@ -95,6 +95,7 @@ def main():
                 current_state = BotStates.RKEYING
                 continue
         elif current_state == BotStates.MOVING:
+            parser.flush_new_lines()
             if dirx != None:
                 shoot_dir = movement_to_shooting[dirx]
                 pyautogui.keyDown(shoot_dir)
@@ -107,25 +108,26 @@ def main():
                 move(diry, 5)
                 pyautogui.keyUp(shoot_dir)
             else:
-                raise ValueError
+                raise TypeError
             parser.parse()
             try:
-                item_id, item_name, player_name = parser.get_most_recent_item()
-            except ValueError:
+                item_id, item_name, character_name = parser.get_most_recent_item()
+            except TypeError:
+                print("Should be moving around block")
                 if dirx != None:
                     move_around_block(xdir=dirx)
                 elif diry != None:
                     move_around_block(ydir=diry)
                 parser.parse()
                 try:
-                    item_id, item_name, player_name = parser.get_most_recent_item()
-                except ValueError:
+                    item_id, item_name, character_name = parser.get_most_recent_item()
+                except TypeError:
                     current_state = BotStates.RKEYING
                     continue
 
             if (
                 id_to_quality[item_id] == target_quality
-                and starting_items[player_name] != item_id
+                and item_id not in starting_items[character_name]
             ):
                 current_state = BotStates.FOUND
                 continue
@@ -135,7 +137,8 @@ def main():
         elif current_state == BotStates.FOUND:
             print("dance")
             pyautogui.press("esc")
-            send_email(item_name, email_recipient)
+            if do_send_email:
+                send_email(item_name)
             break
 
 

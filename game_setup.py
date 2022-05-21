@@ -29,7 +29,9 @@ class WindowsStyleFlags:
     SizeBox = ThickFrame
     TiledWindow = Overlapped
 
-    OverlappedWindow = Overlapped | Caption | SystemMenu | ThickFrame | MinimizeBox | MaximizeBox
+    OverlappedWindow = (
+        Overlapped | Caption | SystemMenu | ThickFrame | MinimizeBox | MaximizeBox
+    )
     ChildWindow = Child
 
     ExtendedDlgModalFrame = 0x00000001
@@ -59,6 +61,7 @@ class WindowsStyleFlags:
     ExtendedComposited = 0x02000000
     ExtendedNoActivate = 0x08000000
 
+
 class SetWindowPosFlags:
     AsyncWindowPos = 0x4000
     DeferBase = 0x2000
@@ -76,6 +79,7 @@ class SetWindowPosFlags:
     NoZOrder = 0x0004
     ShowWindow = 0x0040
 
+
 class WindowLongIndex:
     ExtendedStyle = -20
     HandleInstance = -6
@@ -90,14 +94,34 @@ def borderless_fullscreen_window(window_name):
     def enum_handler(hwnd, extra):
         if win32gui.IsWindowVisible(hwnd):
             if window_name in win32gui.GetWindowText(hwnd):
-                print("pog")
                 style = win32gui.GetWindowLong(hwnd, WindowLongIndex.Style)
-                borderless_style = style & (0xFFFFFFFFFFFFFFFF - (WindowsStyleFlags.Caption | WindowsStyleFlags.ThickFrame | WindowsStyleFlags.MinimizeBox | WindowsStyleFlags.MaximizeBox | WindowsStyleFlags.SystemMenu))
-                extra_style = win32gui.GetWindowLong(hwnd, WindowLongIndex.ExtendedStyle)
-                borderless_extra_style = extra_style & (0xFFFFFFFFFFFFFFFF - (WindowsStyleFlags.ExtendedDlgModalFrame | WindowsStyleFlags.ExtendedClientEdge | WindowsStyleFlags.ExtendedStaticEdge))
+                borderless_style = style & (
+                    0xFFFFFFFFFFFFFFFF
+                    - (
+                        WindowsStyleFlags.Caption
+                        | WindowsStyleFlags.ThickFrame
+                        | WindowsStyleFlags.MinimizeBox
+                        | WindowsStyleFlags.MaximizeBox
+                        | WindowsStyleFlags.SystemMenu
+                    )
+                )
+                extra_style = win32gui.GetWindowLong(
+                    hwnd, WindowLongIndex.ExtendedStyle
+                )
+                borderless_extra_style = extra_style & (
+                    0xFFFFFFFFFFFFFFFF
+                    - (
+                        WindowsStyleFlags.ExtendedDlgModalFrame
+                        | WindowsStyleFlags.ExtendedClientEdge
+                        | WindowsStyleFlags.ExtendedStaticEdge
+                    )
+                )
                 win32gui.SetWindowLong(hwnd, WindowLongIndex.Style, borderless_style)
-                win32gui.SetWindowLong(hwnd, WindowLongIndex.ExtendedStyle, borderless_extra_style)
-                win32gui.SetWindowPos(hwnd, 0, 0, 0, 1920, 1080, (SetWindowPosFlags.FrameChanged))
-    
-    
+                win32gui.SetWindowLong(
+                    hwnd, WindowLongIndex.ExtendedStyle, borderless_extra_style
+                )
+                win32gui.SetWindowPos(
+                    hwnd, 0, 0, 0, 1920, 1080, (SetWindowPosFlags.FrameChanged)
+                )
+
     win32gui.EnumWindows(enum_handler, None)
